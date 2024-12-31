@@ -188,7 +188,9 @@
         canvas.height = window.innerHeight;
         const fireworks = [];
         const particles = [];
-        let hue = 120;
+        // Danh sách các màu HUE
+        const fireworkHues = [0, 50, 330]; // Đỏ, Vàng ánh kim, Hồng
+        let hue = fireworkHues[Math.floor(Math.random() * fireworkHues.length)];
         let timerTotal = 80;
         let tick = 0;
 
