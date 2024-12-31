@@ -7,7 +7,7 @@
     canvas.style.left = "0";
     canvas.style.width = "100%";
     canvas.style.height = "100%";
-    canvas.style.zIndex = "99";
+    canvas.style.zIndex = "999999";
     canvas.style.pointerEvents = "none"; // Không chặn các tương tác khác trên trang
     document.body.appendChild(canvas);
 
