@@ -1,13 +1,3 @@
-// Tự động chèn CSS vào <head>
-(function() {
-    var link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = "https://sonpham307198.github.io/fire-work-2024/firework.css"; // Đường dẫn tới file CSS
-    document.head.appendChild(link);
-})();
-
-// Hiệu ứng pháo hoa
 (function() {
     // Tự động tạo và thêm phần tử <canvas> vào DOM
     var canvas = document.createElement("canvas");
@@ -29,35 +19,6 @@
     }();
 
     function fireworksPlugin(canvas) {
-        function hexToHSL(hex) {
-            hex = hex.replace(/^#/, '');
-            let bigint = parseInt(hex, 16);
-            let r = (bigint >> 16) & 255;
-            let g = (bigint >> 8) & 255;
-            let b = bigint & 255;
-            r /= 255, g /= 255, b /= 255;
-            let max = Math.max(r, g, b), min = Math.min(r, g, b);
-            let h, s, l = (max + min) / 2;
-
-            if (max === min) {
-                h = s = 0;
-            } else {
-                let d = max - min;
-                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                switch (max) {
-                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                    case g: h = (b - r) / d + 2; break;
-                    case b: h = (r - g) / d + 4; break;
-                }
-                h /= 6;
-            }
-            return {
-                h: Math.round(h * 360),
-                s: Math.round(s * 100),
-                l: Math.round(l * 100)
-            };
-        }
-
         function random(min, max) {
             return Math.random() * (max - min) + min;
         }
@@ -82,6 +43,8 @@
                 this.acceleration = 1.03;
                 this.brightness = random(60, 70);
                 this.targetRadius = 1.5;
+                // Chọn ngẫu nhiên 1 màu từ danh sách
+                this.hue = fireworkHues[Math.floor(Math.random() * fireworkHues.length)];
             }
 
             update(index) {
@@ -95,7 +58,7 @@
                 this.distanceTraveled = calculateDistance(this.sx, this.sy, this.x + vx, this.y + vy);
 
                 if (this.distanceTraveled >= this.distanceToTarget) {
-                    createParticles(this.tx, this.ty);
+                    createParticles(this.tx, this.ty, this.hue);
                     fireworks.splice(index, 1);
                 } else {
                     this.x += vx;
@@ -107,7 +70,7 @@
                 context.beginPath();
                 context.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
                 context.lineTo(this.x, this.y);
-                context.strokeStyle = `hsl(${hue}, 100%, ${this.brightness}%)`;
+                context.strokeStyle = `hsl(${this.hue}, 100%, ${this.brightness}%)`;
                 context.stroke();
                 context.beginPath();
                 context.arc(this.tx, this.ty, this.targetRadius, 0, Math.PI * 2);
@@ -116,7 +79,7 @@
         }
 
         class Particle {
-            constructor(x, y) {
+            constructor(x, y, hue) {
                 this.x = x;
                 this.y = y;
                 this.coordinates = Array.from({ length: 5 }, () => [x, y]);
@@ -152,9 +115,9 @@
             }
         }
 
-        function createParticles(x, y) {
+        function createParticles(x, y, hue) {
             for (let i = 0; i < 80; i++) {
-                particles.push(new Particle(x, y));
+                particles.push(new Particle(x, y, hue));
             }
         }
 
@@ -176,7 +139,9 @@
             });
 
             if (tick >= timerTotal) {
-                fireworks.push(new Firework(canvas.width / 2, canvas.height, random(0, canvas.width), random(0, canvas.height / 2)));
+                let tx = random(0, canvas.width);
+                let ty = random(canvas.height * 0.2, canvas.height * 0.8); // Giới hạn chiều cao
+                fireworks.push(new Firework(canvas.width / 2, canvas.height, tx, ty));
                 tick = 0;
             } else {
                 tick++;
@@ -188,14 +153,14 @@
         canvas.height = window.innerHeight;
         const fireworks = [];
         const particles = [];
-        // Danh sách các màu HUE
         const fireworkHues = [0, 50, 330]; // Đỏ, Vàng ánh kim, Hồng
-        let hue = fireworkHues[Math.floor(Math.random() * fireworkHues.length)];
         let timerTotal = 80;
         let tick = 0;
 
         canvas.addEventListener('mousedown', (e) => {
-            fireworks.push(new Firework(canvas.width / 2, canvas.height, e.clientX, e.clientY));
+            let tx = e.clientX;
+            let ty = e.clientY;
+            fireworks.push(new Firework(canvas.width / 2, canvas.height, tx, ty));
         });
 
         loop();
