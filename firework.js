@@ -1,3 +1,12 @@
+// Tự động nhúng file CSS khi chạy file JS
+(function() {
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.href = "https://sonpham307198.github.io/fire-work-2024/firework.css"; // Thay bằng đường dẫn tới file CSS của bạn
+    document.head.appendChild(link);
+})();
+
 document.addEventListener("DOMContentLoaded", function () {
     function fireworksPlugin(n) {
         function hexToHSL(hex) {
