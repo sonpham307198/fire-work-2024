@@ -7,7 +7,7 @@
     canvas.style.left = "0";
     canvas.style.width = "100%";
     canvas.style.height = "100%";
-    canvas.style.zIndex = "99";
+    canvas.style.zIndex = "999999";
     canvas.style.pointerEvents = "none"; // Không chặn các tương tác khác trên trang
     document.body.appendChild(canvas);
 
@@ -28,7 +28,7 @@
         }
 
         class Firework {
-            constructor(sx, sy, tx, ty) {
+            constructor(sx, sy, tx, ty, hue) {
                 this.x = sx;
                 this.y = sy;
                 this.sx = sx;
@@ -43,8 +43,7 @@
                 this.acceleration = 1.03;
                 this.brightness = random(60, 70);
                 this.targetRadius = 1.5;
-                // Chọn ngẫu nhiên 1 màu từ danh sách
-                this.hue = fireworkHues[Math.floor(Math.random() * fireworkHues.length)];
+                this.hue = hue; // Gán màu ngẫu nhiên từ danh sách
             }
 
             update(index) {
@@ -122,6 +121,7 @@
         }
 
         function loop() {
+            if (!isRunning) return; // Dừng hiệu ứng nếu hết thời gian
             requestAnimFrame(loop);
             context.globalCompositeOperation = 'destination-out';
             context.fillStyle = 'rgba(0, 0, 0, 0.5)';
@@ -141,7 +141,8 @@
             if (tick >= timerTotal) {
                 let tx = random(0, canvas.width);
                 let ty = random(canvas.height * 0.2, canvas.height * 0.8); // Giới hạn chiều cao
-                fireworks.push(new Firework(canvas.width / 2, canvas.height, tx, ty));
+                let hue = fireworkHues[Math.floor(Math.random() * fireworkHues.length)]; // Random màu
+                fireworks.push(new Firework(canvas.width / 2, canvas.height, tx, ty, hue));
                 tick = 0;
             } else {
                 tick++;
@@ -156,11 +157,19 @@
         const fireworkHues = [0, 50, 330]; // Đỏ, Vàng ánh kim, Hồng
         let timerTotal = 80;
         let tick = 0;
+        let isRunning = true;
+
+        // Tự động dừng pháo hoa sau 30 giây
+        setTimeout(() => {
+            isRunning = false;
+        }, 30000);
 
         canvas.addEventListener('mousedown', (e) => {
+            if (!isRunning) return;
             let tx = e.clientX;
             let ty = e.clientY;
-            fireworks.push(new Firework(canvas.width / 2, canvas.height, tx, ty));
+            let hue = fireworkHues[Math.floor(Math.random() * fireworkHues.length)];
+            fireworks.push(new Firework(canvas.width / 2, canvas.height, tx, ty, hue));
         });
 
         loop();
