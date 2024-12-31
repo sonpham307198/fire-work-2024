@@ -7,7 +7,7 @@
     canvas.style.left = "0";
     canvas.style.width = "100%";
     canvas.style.height = "100%";
-    canvas.style.zIndex = "999999";
+    canvas.style.zIndex = "99";
     canvas.style.pointerEvents = "none"; // Không chặn các tương tác khác trên trang
     document.body.appendChild(canvas);
 
@@ -121,7 +121,7 @@
         }
 
         function loop() {
-            if (!isRunning) return; // Dừng hiệu ứng nếu hết thời gian
+            if (!isRunning && fireworks.length === 0 && particles.length === 0) return; // Dừng khi hết pháo hoa và hạt
             requestAnimFrame(loop);
             context.globalCompositeOperation = 'destination-out';
             context.fillStyle = 'rgba(0, 0, 0, 0.5)';
@@ -138,7 +138,7 @@
                 particle.update(index);
             });
 
-            if (tick >= timerTotal) {
+            if (isRunning && tick >= timerTotal) {
                 let tx = random(0, canvas.width);
                 let ty = random(canvas.height * 0.2, canvas.height * 0.8); // Giới hạn chiều cao
                 let hue = fireworkHues[Math.floor(Math.random() * fireworkHues.length)]; // Random màu
@@ -155,7 +155,7 @@
         const fireworks = [];
         const particles = [];
         const fireworkHues = [0, 50, 330]; // Đỏ, Vàng ánh kim, Hồng
-        let timerTotal = 80;
+        let timerTotal = 40; // Giảm để tăng số lượng pháo hoa
         let tick = 0;
         let isRunning = true;
 
